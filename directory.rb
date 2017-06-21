@@ -1,17 +1,25 @@
 require 'date'
 
 def input_students
-  puts "Please enter the names of the students"
+  puts "Please enter the name of the first student"
   puts "To finish, just hit return twice"
   students = []
   while true do
     name = gets.chomp
-      if name.empty?
+      if name.empty? && students.empty?
+        exit
+      elsif name.empty?
         break
       end
-    puts "What cohort is #{name} in?"
-    cohort = gets.chomp.to_sym
-    cohort = Date::MONTHNAMES[Date.today.month].to_sym if cohort.empty? #assign current month if no answer given
+    puts "What cohort is #{name} in? (leaving blank defaults to today's month)"
+    cohort = gets.capitalize.chomp
+    cohort = Date::MONTHNAMES[Date.today.month] if cohort.empty? #assign current month if no answer given
+      #check that cohort is a valid month.
+      while (Date::MONTHNAMES.include? cohort) == false
+        puts "Enter a valid month"
+        cohort = gets.capitalize.chomp
+      end
+    cohort = cohort.to_sym
     puts "Where is #{name} from?"
     cob = gets.chomp
     puts "What is #{name}'s height?"
@@ -23,7 +31,11 @@ def input_students
         heightnum = height.to_i
       end
     students << {name: name.capitalize, cohort: cohort, country: cob.capitalize, height: height}
-    puts "Now we have #{students.count} students. Enter next student"
+    if students.count == 1
+      puts "Now we have #{students.count} student. Enter next student"
+    else
+      puts "Now we have #{students.count} students. Enter next student"
+    end
   end
   students
 end
@@ -50,7 +62,11 @@ def print(students)
 end
 
 def print_footer(names)
-  puts "Overall, we have #{names.count} great students."
+  if names.count == 1
+    puts "Overall, we have #{names.count} student."
+  else
+    puts "Overall, we have #{names.count} students."
+  end
 end
 
 students = input_students
