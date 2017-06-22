@@ -12,12 +12,12 @@ def save_students(filename)
     #recursion!
     save_students(filename)
   else
-    file = File.open(filename, "w")
-    @students.each do |student|
-      student_data = [student[:name], student[:cohort], student[:cob], student[:height]].join(",")
-      file.puts student_data
+    File.open(filename, "w") do |data|
+      @students.each do |student|
+        student_data = [student[:name], student[:cohort], student[:cob], student[:height]].join(",")
+        data.puts student_data
+      end
     end
-    file.close
     puts "Student list saved as #{filename}"
   end
 end
@@ -29,12 +29,10 @@ def load_students(filename)
     #recursion!
     load_students(filename)
   elsif File.exists?(filename)
-    file = File.open(filename.chomp, "r")
-    file.readlines.each do |line|
+    File.open(filename, "r").readlines.each do |line|
       name, cohort, cob, height = line.chomp.split(',')
       pushtostudents(name, cohort, cob, height)
     end
-    file.close
     puts "Loaded students from #{filename}. There are currently #{@students.count} students."
   else
     puts "Sorry, #{filename} doesn't exist."
@@ -133,14 +131,6 @@ def print_header
   puts "The students of Villains Academy"
   puts "----------"
 end
-
-#def print(students)
-#  students.each_with_index do |student, index|
-#    if (student[:cohort].downcase.start_with? ("m")) && (student[:name].length > 12)
-#      puts "#{index + 1}. #{student[:name]} (#{student[:cohort]} cohort)"
-#    end
-#  end
-#end
 
 def print_students
   cohortarray = @students.map{|x| x[:cohort]}
