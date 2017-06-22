@@ -4,12 +4,22 @@ require 'date'
 def save_students
   file = File.open("students.csv", "w")
   @students.each do |student|
-    student_data = [student[:name], student[:cohort]]
+    student_data = [student[:name], student[:cohort], student[:cob], student[:height]]
     csv_line = student_data.join(",")
     file.puts csv_line
   end
   file.close
   puts "Student list saved as 'students.csv'"
+end
+
+def load_students
+  file = File.open("students.csv", "r")
+  file.readlines.each do |line|
+    name, cohort, cob, height = line.chomp.split(',')
+    @students << {name: name, cohort: cohort.to_sym, cob: cob, height: height}
+  end
+  file.close
+  puts "File loaded"
 end
 
 def process(selection)
@@ -20,6 +30,8 @@ def process(selection)
     show_students
   when "3"
     save_students
+  when "4"
+    load_students
   when "9"
     exit
   else
@@ -31,6 +43,7 @@ def print_menu
   puts "1. Input the students"
   puts "2. Show the students"
   puts "3. Save the list to students.csv"
+  puts "4. Load the list from students.csv"
   puts "9. Exit" # 9 because we'll be adding more items
 end
 
@@ -69,7 +82,7 @@ def input_students
     end
     cohort = cohort.to_sym
     puts "Where is #{name} from?"
-    cob = gets.strip
+    cob = gets.capitalize.strip
     puts "What is #{name}'s height?"
     height = gets.strip
     heightnum = height.to_i
