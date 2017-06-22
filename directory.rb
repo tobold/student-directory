@@ -1,27 +1,35 @@
 require 'date'
+@students = []
+
+def process(selection)
+  case selection
+  when "1"
+    input_students
+  when "2"
+    show_students
+  when "9"
+    exit
+  else
+    puts "I don't know what you meant, try again"
+  end
+end
+
+def print_menu
+  puts "1. Input the students"
+  puts "2. Show the students"
+  puts "9. Exit" # 9 because we'll be adding more items
+end
+
+def show_students
+  print_header
+  print_students
+  print_footer
+end
 
 def interactive_menu
-  students = []
   loop do
-    # 1. print the menu and ask the user what to do
-    puts "1. Input students"
-    puts "2. Show students"
-    puts "9. Exit"
-    # 2. read the input and save it into a variable
-    selection = gets.chomp
-    # 3. do what the user has asked
-    case selection
-    when "1"
-      students = input_students
-    when "2"
-      print_header
-      print(students)
-      print_footer(students)
-    when "9"
-      exit
-    else
-      puts "I don't know what you meant, try again"
-    end
+    print_menu
+    process(gets.chomp)
   end
 end
 
@@ -56,14 +64,13 @@ def input_students
         height = gets.strip
         heightnum = height.to_i
       end
-    students << {name: name.capitalize, cohort: cohort, country: cob.capitalize, height: height}
+    @students << {name: name.capitalize, cohort: cohort, country: cob.capitalize, height: height}
     if students.count == 1
-      puts "Now we have #{students.count} student. Enter next student"
+      puts "Now we have #{@students.count} student. Enter next student"
     else
-      puts "Now we have #{students.count} students. Enter next student"
+      puts "Now we have #{@students.count} students. Enter next student"
     end
   end
-  students
 end
 
 def print_header
@@ -79,17 +86,17 @@ end
 #  end
 #end
 
-def print(students)
-  cohortarray = students.map{|x| x[:cohort]}
+def print_students
+  cohortarray = @students.map{|x| x[:cohort]}
   month = 1
   while month <= 12
-  index = students.count - 1
+  index = @students.count - 1
     if cohortarray.include?(Date::MONTHNAMES[month].to_sym)
       puts "Students from the #{Date::MONTHNAMES[month]} cohort:"
     end
     while index >= 0
-      if Date::MONTHNAMES[month].to_sym == students[index][:cohort]
-        puts "#{index + 1}. #{students[index][:name].ljust(20)}"
+      if Date::MONTHNAMES[month].to_sym == @students[index][:cohort]
+        puts "#{index + 1}. #{@students[index][:name].ljust(20)}"
       end
       index = index - 1
     end
@@ -97,11 +104,11 @@ def print(students)
   end
 end
 
-def print_footer(names)
-  if names.count == 1
-    puts "Overall, we have #{names.count} student."
+def print_footer
+  if @students.count == 1
+    puts "Overall, we have #{@students.count} student."
   else
-    puts "Overall, we have #{names.count} students."
+    puts "Overall, we have #{@students.count} students."
   end
 end
 
