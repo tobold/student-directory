@@ -1,4 +1,5 @@
 require 'date'
+require 'csv'
 @students = []
 
 def pushtostudents(name, cohort, cob, height)
@@ -12,10 +13,10 @@ def save_students(filename)
     #recursion!
     save_students(filename)
   else
-    File.open(filename, "w") do |data|
+
+    CSV.open(filename, "w") do |data|
       @students.each do |student|
-        student_data = [student[:name], student[:cohort], student[:cob], student[:height]].join(",")
-        data.puts student_data
+        data << [student[:name], student[:cohort], student[:cob], student[:height]]
       end
     end
     puts "Student list saved as #{filename}"
@@ -29,9 +30,8 @@ def load_students(filename)
     #recursion!
     load_students(filename)
   elsif File.exists?(filename)
-    File.open(filename, "r").readlines.each do |line|
-      name, cohort, cob, height = line.chomp.split(',')
-      pushtostudents(name, cohort, cob, height)
+    CSV.open(filename, "r").readlines.each do |line|
+      pushtostudents(line[0], line[1], line[2], line[3])
     end
     puts "Loaded students from #{filename}. There are currently #{@students.count} students."
   else
