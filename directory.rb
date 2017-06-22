@@ -1,5 +1,30 @@
 require 'date'
 
+def interactive_menu
+  students = []
+  loop do
+    # 1. print the menu and ask the user what to do
+    puts "1. Input students"
+    puts "2. Show students"
+    puts "9. Exit"
+    # 2. read the input and save it into a variable
+    selection = gets.chomp
+    # 3. do what the user has asked
+    case selection
+    when "1"
+      students = input_students
+    when "2"
+      print_header
+      print(students)
+      print_footer(students)
+    when "9"
+      exit
+    else
+      puts "I don't know what you meant, try again"
+    end
+  end
+end
+
 def input_students
   puts "Please enter the name of the first student"
   puts "To finish, just hit return twice"
@@ -7,18 +32,19 @@ def input_students
   while true do
     name = gets.strip
       if name.empty? && students.empty?
-        exit
+        break
       elsif name.empty?
         break
       end
     puts "What cohort is #{name} in? (leaving blank defaults to today's month)"
     cohort = gets.capitalize.strip
-    cohort = Date::MONTHNAMES[Date.today.month] if cohort.empty? #assign current month if no answer given
+    #assign current month if no answer given
+    cohort = Date::MONTHNAMES[Date.today.month] if cohort.empty?
       #check that cohort is a valid month.
-      while (Date::MONTHNAMES.include? cohort) == false
-        puts "Enter a valid month"
-        cohort = gets.capitalize.strip
-      end
+    while (Date::MONTHNAMES.include? cohort) == false
+      puts "Enter a valid month"
+      cohort = gets.capitalize.strip
+    end
     cohort = cohort.to_sym
     puts "Where is #{name} from?"
     cob = gets.strip
@@ -79,7 +105,4 @@ def print_footer(names)
   end
 end
 
-students = input_students
-print_header
-print(students)
-print_footer(students)
+interactive_menu
