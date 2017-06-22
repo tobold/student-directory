@@ -1,25 +1,49 @@
 require 'date'
 @students = []
 
-def save_students
-  file = File.open("students.csv", "w")
-  @students.each do |student|
-    student_data = [student[:name], student[:cohort], student[:cob], student[:height]]
-    csv_line = student_data.join(",")
-    file.puts csv_line
-  end
-  file.close
-  puts "Student list saved as 'students.csv'"
+def pushtostudents(name, cohort, cob, height)
+  @students << {name: name, cohort: cohort.to_sym, cob: cob, height: height}
 end
 
-def load_students
-  file = File.open("students.csv", "r")
-  file.readlines.each do |line|
-    name, cohort, cob, height = line.chomp.split(',')
-    @students << {name: name, cohort: cohort.to_sym, cob: cob, height: height}
+def save_students(filename)
+  if filename.nil?
+    puts "Enter filename"
+    filename = STDIN.gets.chomp
+    #recursion!
+    save_students(filename)
+  else
+    file = File.open(filename, "w")
+    @students.each do |student|
+      student_data = [student[:name], student[:cohort], student[:cob], student[:height]].join(",")
+      file.puts student_data
+    end
+    file.close
+    puts "Student list saved as #{filename}"
   end
-  file.close
-  puts "File loaded"
+end
+
+def load_students(filename)
+  if filename.nil?
+    filename = "students.csv"
+    #recursion!
+    load_students(filename)
+  elsif File.exists?(filename)
+    file = File.open(filename.chomp, "r")
+    file.readlines.each do |line|
+      name, cohort, cob, height = line.chomp.split(',')
+      pushtostudents(name, cohort, cob, height)
+    end
+    file.close
+    puts "Loaded students from #{filename}. There are currently #{@students.count} students."
+  else
+    puts "Sorry, #{filename} doesn't exist."
+    return
+  end
+end
+
+def try_load_students
+  filename = ARGV.first
+  load_students(filename)
 end
 
 def process(selection)
@@ -29,9 +53,16 @@ def process(selection)
   when "2"
     show_students
   when "3"
-    save_students
+    puts "Enter filename"
+    filename = STDIN.gets.chomp
+    save_students(filename)
   when "4"
-    load_students
+    puts "Enter filename"
+    filename = STDIN.gets.chomp
+    load_students(filename)
+  when "5"
+    @students.clear
+    puts "Database cleared"
   when "9"
     exit
   else
@@ -42,8 +73,9 @@ end
 def print_menu
   puts "1. Input the students"
   puts "2. Show the students"
-  puts "3. Save the list to students.csv"
-  puts "4. Load the list from students.csv"
+  puts "3. Save the list"
+  puts "4. Load a list"
+  puts "5. Clear list"
   puts "9. Exit" # 9 because we'll be adding more items
 end
 
@@ -56,43 +88,39 @@ end
 def interactive_menu
   loop do
     print_menu
-    process(gets.chomp)
+    process(STDIN.gets.chomp)
   end
 end
 
 def input_students
   puts "Please enter the name of the first student"
   puts "To finish, just hit return twice"
-  students = []
   while true do
-    name = gets.split.map(&:capitalize).join(' ').strip
-      if name.empty? && students.empty?
-        break
-      elsif name.empty?
+    name = STDIN.gets.split.map(&:capitalize).join(' ').strip
+      if name.empty?
         break
       end
     puts "What cohort is #{name} in? (leaving blank defaults to today's month)"
-    cohort = gets.capitalize.strip
+    cohort = STDIN.gets.capitalize.strip
     #assign current month if no answer given
     cohort = Date::MONTHNAMES[Date.today.month] if cohort.empty?
       #check that cohort is a valid month.
     while (Date::MONTHNAMES.include? cohort) == false
       puts "Enter a valid month"
-      cohort = gets.capitalize.strip
+      cohort = STDIN.gets.capitalize.strip
     end
-    cohort = cohort.to_sym
     puts "Where is #{name} from?"
-    cob = gets.capitalize.strip
+    cob = STDIN.gets.capitalize.strip
     puts "What is #{name}'s height?"
-    height = gets.strip
+    height = STDIN.gets.strip
     heightnum = height.to_i
       while height.is_a?(Integer) == false && heightnum == 0
         puts "Please enter a valid height"
-        height = gets.strip
+        height = STDIN.gets.strip
         heightnum = height.to_i
       end
-    @students << {name: name, cohort: cohort, country: cob.capitalize, height: height}
-    if students.count == 1
+    pushtostudents(name, cohort, cob, height)
+    if @students.count == 1
       puts "Now we have #{@students.count} student. Enter next student"
     else
       puts "Now we have #{@students.count} students. Enter next student"
@@ -139,4 +167,5 @@ def print_footer
   end
 end
 
+try_load_students
 interactive_menu
