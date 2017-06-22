@@ -1,12 +1,25 @@
 require 'date'
 @students = []
 
+def save_students
+  file = File.open("students.csv", "w")
+  @students.each do |student|
+    student_data = [student[:name], student[:cohort]]
+    csv_line = student_data.join(",")
+    file.puts csv_line
+  end
+  file.close
+  puts "Student list saved as 'students.csv'"
+end
+
 def process(selection)
   case selection
   when "1"
     input_students
   when "2"
     show_students
+  when "3"
+    save_students
   when "9"
     exit
   else
@@ -17,6 +30,7 @@ end
 def print_menu
   puts "1. Input the students"
   puts "2. Show the students"
+  puts "3. Save the list to students.csv"
   puts "9. Exit" # 9 because we'll be adding more items
 end
 
@@ -38,7 +52,7 @@ def input_students
   puts "To finish, just hit return twice"
   students = []
   while true do
-    name = gets.strip
+    name = gets.split.map(&:capitalize).join(' ').strip
       if name.empty? && students.empty?
         break
       elsif name.empty?
@@ -64,7 +78,7 @@ def input_students
         height = gets.strip
         heightnum = height.to_i
       end
-    @students << {name: name.capitalize, cohort: cohort, country: cob.capitalize, height: height}
+    @students << {name: name, cohort: cohort, country: cob.capitalize, height: height}
     if students.count == 1
       puts "Now we have #{@students.count} student. Enter next student"
     else
