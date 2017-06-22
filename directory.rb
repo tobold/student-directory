@@ -6,7 +6,7 @@ def pushtostudents(name, cohort, cob, height)
 end
 
 def save_students(filename)
-  if filename.nil?
+  if filename.to_s.empty?
     puts "Enter filename"
     filename = STDIN.gets.chomp
     #recursion!
@@ -23,7 +23,8 @@ def save_students(filename)
 end
 
 def load_students(filename)
-  if filename.nil?
+  if filename.to_s.empty?
+    #set default filename
     filename = "students.csv"
     #recursion!
     load_students(filename)
@@ -57,7 +58,7 @@ def process(selection)
     filename = STDIN.gets.chomp
     save_students(filename)
   when "4"
-    puts "Enter filename"
+    puts "Enter filename" (blank loads default)
     filename = STDIN.gets.chomp
     load_students(filename)
   when "5"
