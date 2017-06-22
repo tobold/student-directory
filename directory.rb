@@ -58,7 +58,7 @@ def process(selection)
     filename = STDIN.gets.chomp
     save_students(filename)
   when "4"
-    puts "Enter filename" (blank loads default)
+    puts "Enter filename (blank loads default)"
     filename = STDIN.gets.chomp
     load_students(filename)
   when "5"
